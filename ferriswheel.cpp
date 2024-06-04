@@ -11,7 +11,7 @@ FerrisWheel::FerrisWheel(QWidget *parent)
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &FerrisWheel::updateAnimation);
-    timer->start(16);
+    timer->start(7);
 
     elapsedTimer.start();
 }
@@ -49,19 +49,29 @@ void FerrisWheel::updateAnimation()
 void FerrisWheel::drawCabin(QPainter &painter)
 {
     QPoint cabinTop = rotatePoint(QPoint(center.x(), center.y() + radius), angle);
-    QPoint cabinBottomLeft(cabinTop.x() - 25, cabinTop.y() + 30);
-    QPoint cabinBottomRight(cabinTop.x() + 25, cabinTop.y() + 30);
+    QPoint triangleLeft(cabinTop.x() - 25, cabinTop.y() + 30);
+    QPoint triangleRight(cabinTop.x() + 25, cabinTop.y() + 30);
+    QPoint triangleBottom(cabinTop.x(), cabinTop.y() + 50);
 
-    painter.setPen(Qt::SolidLine);
-    painter.drawRect(cabinBottomLeft.x(), cabinBottomLeft.y(), 50, 30);
+    QPen pen(Qt::SolidLine);
+    painter.setPen(pen);
+    painter.drawLine(cabinTop, triangleLeft);
+    painter.drawLine(cabinTop, triangleRight);
+    painter.drawLine(triangleLeft, triangleRight);
 
-    QPoint triangleTip(cabinTop.x(), cabinTop.y() - 40);
-    painter.drawLine(cabinTop, cabinBottomLeft);
-    painter.drawLine(cabinTop, cabinBottomRight);
-    painter.drawLine(cabinBottomLeft, cabinBottomRight);
+    QPoint rectBottomLeft(triangleLeft.x(), triangleLeft.y() + 30);
+    QPoint rectBottomRight(triangleRight.x(), triangleRight.y() + 30);
 
-    painter.setBrush(Qt::black);
-    painter.drawEllipse(cabinTop, 2, 2);
+    painter.drawLine(triangleLeft, rectBottomLeft);
+    painter.drawLine(triangleRight, rectBottomRight);
+    painter.drawLine(rectBottomLeft, rectBottomRight);
+    //painter.drawLine(triangleLeft, triangleRight);
+
+    pen.setWidth(2);
+    painter.setPen(pen);
+    int pointSize = 1;
+    painter.drawLine(cabinTop.x() - pointSize, cabinTop.y() - pointSize, cabinTop.x() + pointSize, cabinTop.y() + pointSize);
+    painter.drawLine(cabinTop.x() - pointSize, cabinTop.y() + pointSize, cabinTop.x() + pointSize, cabinTop.y() - pointSize);
 }
 
 QPoint FerrisWheel::rotatePoint(const QPoint &p, double angle)
